@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bus.mapper.CustomerShareMapper" >
+    <resultMap id="BaseResultMap2" type="com.bus.entity.CustomerShare" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <id column="cid" property="cid" jdbcType="INTEGER" />
+        <id column="uid" property="uid" jdbcType="INTEGER" />
+        <association property="c" javaType="Customer"
+                     select="com.bus.mapper.CustomerMapper.selectByPrimaryKey" column="cid">
+        </association>
+        <association property="u" javaType="User"
+                     select="com.bus.mapper.UserMapper.selectByPrimaryKey" column="uid">
+        </association>
+    </resultMap>
+    <select id="selectAllCustomerShare" resultMap="BaseResultMap2">
+        select cs.*,u.user_name,c.cusName from user u,customer c,customershare cs
+        where u.uid=cs.uid and c.cid=cs.cid and u.user_name = #{name} order by cs.id
+    </select>
+    <select id="findCustomerShareByCondition" resultMap="BaseResultMap2">
+        select cs.*,u.user_name,c.cusName from user u,customer c,customershare cs
+        <where>
+            u.uid=cs.uid and cs.cid = c.cid
+            <if test="c.cid != null">
+                and cs.cid like #{c.cid}
+            </if>
+        </where>
+        order by cs.id
+    </select>
+
+
+</mapper>

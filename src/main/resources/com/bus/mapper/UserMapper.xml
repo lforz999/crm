@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bus.mapper.UserMapper" >
+    <resultMap id="BaseResultMap2" type="com.bus.entity.User" >
+        <id column="uid" property="uid" jdbcType="INTEGER" />
+        <result column="user_name" property="userName" jdbcType="VARCHAR" />
+        <result column="user_password" property="userPassword" jdbcType="VARCHAR" />
+        <result column="rid" property="rid" jdbcType="INTEGER" />
+        <association property="r" javaType="Role"
+                     select="com.bus.mapper.RoleMapper.selectByPrimaryKey" column="rid">
+        </association>
+    </resultMap>
+    <select id="selectPasswordByName" resultType="String" parameterType="String">
+        select user_password from user where user_name = #{name}
+    </select>
+    <select id="selectIdByName" resultType="int" parameterType="String">
+        select uid from user where user_name = #{name}
+    </select>
+    <select id="selectAllUsers" resultMap="BaseResultMap2">
+        select u.*,r.role_desc from user u,role r
+        where u.rid=r.rid and rid = 2 order by u.uid
+    </select>
+    <select id="findUsersByCondition" resultMap="BaseResultMap2">
+        select u.* ,r.role_desc from user u,role r
+        <where>
+            u.rid=r.rid and r.rid = 2
+            <if test="userName != null">
+                and user_name like "%"#{userName}"%"
+            </if>
+        </where>
+        order by u.uid
+    </select>
+    <select id="findAllUsersByCondition" resultMap="BaseResultMap2">
+        select u.* ,r.role_desc from user u,role r
+        <where>
+            u.rid=r.rid
+            <if test="userName != null">
+                and user_name like "%"#{userName}"%"
+            </if>
+        </where>
+        order by u.uid
+    </select>
+
+</mapper>

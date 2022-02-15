@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bus.mapper.RolePermissionMapper" >
+    <resultMap id="BaseResultMap2" type="com.bus.entity.RolePermission" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <id column="rid" property="rid" jdbcType="INTEGER" />
+        <id column="permissionid" property="permissionid" jdbcType="INTEGER" />
+        <association property="r" javaType="Role"
+                     select="com.bus.mapper.RoleMapper.selectByPrimaryKey" column="rid">
+        </association>
+        <association property="p" javaType="Permission"
+                     select="com.bus.mapper.PermissionMapper.selectByPrimaryKey" column="permissionid">
+        </association>
+    </resultMap>
+
+    <resultMap id="BaseResultMap3" type="com.bus.entity.Role" >
+        <id column="rid" property="rid" jdbcType="INTEGER" />
+        <result column="role_desc" property="roleDesc"></result>
+    </resultMap>
+
+    <select id="selectAllRolePermission" resultMap="BaseResultMap2">
+        select r.role_desc from role r order by r.rid
+    </select>
+
+    <select id="selectRolePermissionById" resultMap="BaseResultMap2">
+        select * from rolepermission where rid = #{id}
+    </select>
+
+    <delete id="deleteAllRolePermission" parameterType="Integer" >
+        delete from rolepermission where rid = #{id}
+    </delete>
+
+    <insert id="insertMore" parameterType="list" >
+        insert into rolepermission (rid,permissionid) values
+        <foreach collection="list" item="rp"  separator=",">
+            (#{rp.rid},#{rp.permissionid})
+        </foreach>
+    </insert>
+
+    <select id="findRolePermissionByCondition" resultMap="BaseResultMap2">
+        SELECT rp.*,r.role_desc,p.pinfo from rolepermission rp,permission p,role r
+        <where>
+            rp.rid=r.rid and rp.permissionid=p.permissionid
+            <if test="r.rid != null ">
+                and rp.rid = #{r.rid}
+            </if>
+            <if test="p.permissionid != null ">
+                and rp.permissionid = #{p.permissionid}
+            </if>
+        </where>
+
+        order by rp.id
+    </select>
+
+</mapper>

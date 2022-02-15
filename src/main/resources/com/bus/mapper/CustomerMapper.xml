@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bus.mapper.CustomerMapper" >
+    <resultMap id="BaseResultMap2" type="com.bus.entity.Customer" >
+        <id column="cid" property="cid" jdbcType="INTEGER" />
+        <result column="cusName" property="cusname" jdbcType="VARCHAR" />
+    </resultMap>
+    <select id="selectAllCustomer" resultMap="BaseResultMap2">
+        select c.* from user u,customer c,customershare cs
+        where u.uid=cs.uid and c.cid=cs.cid and u.user_name = #{name} order by c.cid
+    </select>
+    <select id="selectIdByName" resultType="int">
+        select cid from customer where cusName=#{name}
+    </select>
+    <select id="findCustomersByCondition" resultMap="BaseResultMap2">
+        select c.* from user u,customer c,customershare cs
+        <where>
+            u.uid=cs.uid and c.cid=cs.cid and u.user_name = #{name}
+            <if test="cusname != null">
+                cusName like "%"#{cusname}"%"
+            </if>
+        </where>
+        order by c.cid
+    </select>
+    <select id="findCustomersByName" resultMap="BaseResultMap2">
+        select c.* from user u,customer c,customershare cs
+        where u.uid=cs.uid and c.cid=cs.cid and u.user_name = #{name}
+
+        order by c.cid
+    </select>
+    <select id="selectone" resultType="java.lang.String"></select>
+
+</mapper>

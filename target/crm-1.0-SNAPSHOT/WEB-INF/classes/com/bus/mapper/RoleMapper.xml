@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bus.mapper.RoleMapper" >
+  <resultMap id="BaseResultMap2" type="com.bus.entity.Role" >
+    <id column="rid" property="rid" jdbcType="INTEGER" />
+    <result column="role_name" property="roleName" jdbcType="VARCHAR" />
+    <result column="role_desc" property="roleDesc" jdbcType="VARCHAR" />
+
+  </resultMap>
+  <select id="selectRoleByName" resultType="String" parameterType="String">
+    select role.role_name from user,role where user.rid = role.rid and user.user_name = #{name}
+  </select>
+  <select id="selectRoleById" resultType="String" parameterType="Integer">
+    select role_desc from role where rid = #{id}
+  </select>
+
+  <select id="selectAllRole" resultMap="BaseResultMap2">
+    SELECT r.* , u.user_name from user u,role r WHERE r.rid=u.rid ORDER BY r.rid
+  </select>
+
+  <select id="findRoleByCondition" resultMap="BaseResultMap2">
+    select r.*  from  role r
+    <where>
+      <if test="roleName != null">
+       and role_name like "%"#{roleName}"%"
+      </if>
+    </where>
+    order by r.rid
+  </select>
+
+</mapper>

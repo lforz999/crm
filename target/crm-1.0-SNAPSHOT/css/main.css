@@ -1,0 +1,41 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body{
+    color: white;
+}
+.top{
+    height: 10%;
+    background-color: skyblue;
+}
+.down{
+    background-color: oldlace;
+    height: 90%;
+}
+.left{
+    width: 20%;
+    height: 100%;
+    background-color: grey;
+    font-size: 20px;
+}
+/*.left p{
+    margin-top: 20px;
+}*/
+.right{
+    width: 80%;
+    height: 100%;
+    color: white;
+    text-align: center;
+}
+.fl{
+    float: left;
+}
+a{
+    color: white;
+    text-decoration: none;
+}
+a:hover{
+    color: red;
+    cursor: pointer;
+}

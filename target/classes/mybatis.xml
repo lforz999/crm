@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+ PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+
+<configuration>
+
+	
+	<typeAliases>
+		<package name="com.bus.entity"/>
+	</typeAliases>
+	
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageInterceptor"></plugin>
+	</plugins>
+
+	<!-- 加载主配置文件时, 把mapper也加载了 -->
+	<mappers>
+		<package name="com.bus.mapper" />
+	</mappers>
+	
+</configuration>
+
+
+

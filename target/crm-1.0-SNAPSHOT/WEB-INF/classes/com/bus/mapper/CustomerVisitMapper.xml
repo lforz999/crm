@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bus.mapper.CustomerVisitMapper" >
+    <resultMap id="BaseResultMap2" type="com.bus.entity.CustomerVisit" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <id column="cid" property="cid" jdbcType="INTEGER" />
+        <id column="uid" property="uid" jdbcType="INTEGER" />
+        <association property="c" javaType="Customer"
+                     select="com.bus.mapper.CustomerMapper.selectByPrimaryKey" column="cid">
+        </association>
+        <association property="u" javaType="User"
+                     select="com.bus.mapper.UserMapper.selectByPrimaryKey" column="uid">
+        </association>
+    </resultMap>
+    <select id="selectAllCustomerVisit" resultMap="BaseResultMap2">
+        select cv.*,u.user_name,c.cusName from user u,customer c,customervisit cv
+        where u.uid=cv.uid and c.cid=cv.cid and u.user_name = #{name} order by cv.id
+    </select>
+    <select id="findCustomerVisitByCondition" resultMap="BaseResultMap2">
+        select cv.*,u.user_name,c.cusName from user u,customer c,customervisit cv
+        <where>
+            u.uid=cv.uid and cv.cid = c.cid and u.user_name = #{name}
+            <if test="c.cid != null">
+               and cv.cid like #{c.cid}
+            </if>
+        </where>
+        order by cv.id
+    </select>
+
+
+</mapper>

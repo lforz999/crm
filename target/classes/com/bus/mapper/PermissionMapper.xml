@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.bus.mapper.PermissionMapper" >
+
+  <resultMap id="PermissionResult" type="permission">
+    <id property="permissionid" column="permissionid"/>
+    <result property="pname" column="pname"/>
+    <result property="purl" column="purl"/>
+    <result property="ismenu" column="ismenu"/>
+    <result property="parentid" column="parentid"/>
+    <result property="pinfo" column="pinfo"/>
+    <!-- 一对多映射 -->
+    <collection property="list" select="selectByParentId" column="permissionid"></collection>
+  </resultMap>
+
+
+
+  <!-- 生成多级菜单 -->
+  <resultMap id="PermissionMenu" type="permission">
+    <id property="permissionid" column="permissionid"/>
+    <result property="pname" column="pname"/>
+    <result property="purl" column="purl"/>
+    <result property="ismenu" column="ismenu"/>
+    <result property="parentid" column="parentid"/>
+    <result property="pinfo" column="pinfo"/>
+    <!-- 一对多映射 -->
+    <collection property="list" select="selectPermissionByParentIdAndName"
+                column="{permissionid=permissionid,user_name=user_name}">
+    </collection>
+  </resultMap>
+
+  <resultMap id="PermissionMenu2" type="permission" extends="BaseResultMap2">
+    <id property="permissionid" column="permissionid"/>
+    <result property="pname" column="pname"/>
+    <result property="purl" column="purl"/>
+    <result property="ismenu" column="ismenu"/>
+    <result property="parentid" column="parentid"/>
+    <result property="pinfo" column="pinfo"/>
+    <!-- 一对多映射 -->
+    <collection property="list" select="selectPermissionByParentIdAndName1"
+                column="{permissionid=permissionid,role_desc=role_desc}">
+    </collection>
+  </resultMap>
+
+
+  <resultMap id="BaseResultMap2" type="com.bus.entity.Permission" >
+    <id property="permissionid" column="permissionid"/>
+    <result property="pname" column="pname"/>
+    <result property="purl" column="purl"/>
+    <result property="ismenu" column="ismenu"/>
+    <result property="parentid" column="parentid"/>
+    <result property="pinfo" column="pinfo"/>
+  </resultMap>
+
+  <select id="findPermissionByCondition" resultMap="BaseResultMap2">
+    select p.*  from  permission p
+    <where>
+      <if test="pname != null">
+        and pname like "%"#{pname}"%"
+      </if>
+    </where>
+    order by p.permissionid
+  </select>
+
+  <select id="selectPermissionsByUserName" resultType="String" parameterType="String">
+    select p.pname from user u,rolepermission rp,permission p
+    where u.rid = rp.rid and rp.permissionid = p.permissionid and u.user_name = #{name}
+  </select>
+
+<!-- 根据自己的当前id，查子权限 -->
+  <select id="selectByParentId" resultMap="PermissionResult" parameterType="int">
+    select * from permission where parentid = #{id}
+  </select>
+
+
+<!-- 这个是根据用户名查权限，子菜单有重复或权限不对，交由前端来控制是否显示 -->
+<!-- 查出的是顶级菜单 -->
+  <select id="selectMenuByUserName" resultMap="PermissionResult" parameterType="String">
+    select * from user u,rolepermission ro,permission per where
+    u.rid = ro.rid and ro.permissionid = per.permissionid
+    and per.parentid = 0 and u.user_name = #{name}
+  </select>
+
+<!-- 查出所有权限及子菜单，全部交由前端来控制是否显示 -->
+  <select id="selectAllMenu" resultMap="PermissionResult" >
+    select * from permission where parentid = 0
+  </select>
+
+  <!-- 查出的是顶级菜单 -->
+  <select id="selectPowerMenuByName" parameterType="String" resultMap="PermissionMenu">
+    select per.*,u.user_name from user u,rolepermission ro,permission per where
+      u.rid = ro.rid and ro.permissionid = per.permissionid and per.parentid = 0 and u.user_name = #{name}
+  </select>
+  <!-- 带两个参数的查询子权限的方法 -->
+  <!-- 查出的是子菜单 -->
+  <select id="selectPermissionByParentIdAndName" parameterType="map" resultMap="PermissionMenu">
+    select per.*,u.user_name from user u,rolepermission ro,permission per where
+    u.rid = ro.rid and ro.permissionid = per.permissionid
+    and per.parentid = #{permissionid} and u.user_name = #{user_name}
+  </select>
+
+  <select id="selectone" parameterType="String" resultMap="PermissionMenu2">
+    select p.*,r.role_desc from role r,rolepermission rp,permission p where r.role_desc = #{name} and r.rid = rp.rid
+    and rp.permissionid = p.permissionid and p.parentid = 0
+  </select>
+  <select id="selectPermissionByParentIdAndName1" parameterType="map" resultMap="PermissionMenu2">
+    select per.*,r.role_desc from role r,rolepermission ro,permission per where
+      r.rid = ro.rid and ro.permissionid = per.permissionid
+      and per.parentid = #{permissionid} and r.role_desc = #{role_desc}
+  </select>
+</mapper>
